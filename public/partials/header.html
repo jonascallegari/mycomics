@@ -1,0 +1,49 @@
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/"><img src="/assets/img/logo-my-comics.png" class="img-fluid" alt="My Comics"></a>
+    
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+    
+            <div class="collapse navbar-collapse" id="navbarNav">
+
+                              
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link btn btn-dark dropdown-toggle" href="/comics" data-bs-toggle="dropdown"
+                            aria-expanded="false">Quadrinhos</a>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li><a class="dropdown-item" href="/comics">Quadrinhos</a></li>
+                            <li><a class="dropdown-item" href="/series">Séries</a></li>
+                            <li><a class="dropdown-item" href="/arcos">Arcos</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/publishers">Editoras</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/characters">Personagens</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/creators">Criadores</a>
+                    </li>
+                </ul>
+    
+                <form class="d-flex position-relative">
+                    <input class="form-control me-2" type="search" id="globalSearch"
+                        placeholder="Buscar quadrinhos, personagens ou criadores" autocomplete="off">
+    
+                    <div id="searchResults" class="search-results d-none"></div>
+                </form>
+                
+                <!-- ⚠️ ESSENCIAL -->
+                <ul class="navbar-nav" id="authMenu"></ul>
+                
+            </div>
+        </div>
+    </nav>
+</header>
+
+

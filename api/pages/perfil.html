@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil do Usuário - My Comics</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Core theme CSS -->
+    <link href="../css/style.css" rel="stylesheet" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+
+    <!-- Ícones (Font Awesome, se já estiver usando) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+</head>
+
+<body class="bg-light">
+    <div id="navbar-container"></div>
+
+    <main class="container mt-5">
+    
+        <!-- PROFILE HEADER -->
+        <div class="profile-header card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="row align-items-center">
+    
+                    <div class="col-md-2 text-center">
+                        <div class="profile-avatar clickable">
+                            <img id="avatar" src="./assets/img/placeholder-character.png">
+                        </div>
+                        <small id="createdAt" class="text-muted"></small>
+                    </div>
+    
+                    <div class="col-md-10">
+    
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h2 id="username">Usuário</h2>
+    
+                            <button id="editProfileBtn" class="btn btn-outline-primary btn-sm" style="display:none;">
+                                <i class="fa-solid fa-pen"></i> Editar
+                            </button>
+                        </div>
+    
+                        <p id="bio" class="profile-bio">
+                            Este usuário ainda não escreveu uma bio.
+                        </p>
+    
+                        <div class="favorites-grid mt-3">
+    
+                            <div class="favorite-box">
+                                <h6>Personagem favorito</h6>
+                                <div id="favoriteCharacterBox"></div>
+                            </div>
+    
+                            <div class="favorite-box">
+                                <h6>Quadrinho favorito</h6>
+                                <div id="favoriteComicBox"></div>
+                            </div>
+    
+                        </div>
+    
+                    </div>
+    
+                </div>
+            </div>
+        </div>
+    
+        <!-- USER STATS -->
+        <section id="userStatsSection">
+    
+            <h3 class="mb-4">
+                <i class="fa-solid fa-chart-column"></i> Estatísticas
+            </h3>
+    
+            <!-- STATS CARDS -->
+            <div class="stats-cards">
+    
+                <div class="stat-card">
+                    <h6>Total na coleção</h6>
+                    <h2 id="statTotal">0</h2>
+                </div>
+    
+                <div class="stat-card">
+                    <h6>% Lidos</h6>
+                    <h2 id="statCompletion">0%</h2>
+                </div>
+    
+                <div class="stat-card">
+                    <h6>Nota média</h6>
+                    <h2 id="statAverage">0</h2>
+                </div>
+    
+                <div class="stat-card">
+                    <h6>Wishlist</h6>
+                    <h2 id="statWishlist">0</h2>
+                </div>
+    
+            </div>
+    
+            <!-- GRÁFICOS -->
+            <div class="stats-grid mt-5">
+    
+                <div class="stats-panel">
+                    <h5>Personagens mais presentes</h5>
+                    <div id="charactersChart" class="rank-chart"></div>
+                </div>
+    
+                <div class="stats-panel">
+                    <h5>Criadores mais lidos</h5>
+                    <div id="creatorsChart" class="rank-chart"></div>
+                </div>
+    
+            </div>
+    
+            <!-- LISTAS -->
+            <div class="stats-grid mt-5">
+    
+                <div class="stats-panel">
+                    <h5>Editoras mais presentes</h5>
+                    <ul id="topPublishers" class="list-group"></ul>
+                </div>
+    
+                <div class="stats-panel">
+                    <h5>Gêneros mais lidos</h5>
+                    <ul id="topGenres" class="list-group"></ul>
+                </div>
+    
+            </div>
+    
+            <!-- ATIVIDADE -->
+            <div class="mt-5">
+                <h5>Atividade por ano</h5>
+                <ul id="activityByYear" class="list-group"></ul>
+            </div>
+    
+        </section>
+    
+    </main>
+
+    <div id="footer"></div>
+
+    <div id="avatarModal" class="avatar-modal">
+        <span class="avatar-close">&times;</span>
+        <img id="avatarModalImg" alt="Avatar ampliado">
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="../js/public/config.js"></script>
+    <script src="../js/admin/auth.js"></script>
+    <script src="../js/public/layout.js"></script>
+    <script src="../js/public/navbar.js"></script>
+    <script src="../js/public/perfil.js"></script>
+    <script src="../js/public/global-search.js" defer></script>
+</body>
+
+</html>
