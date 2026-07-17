@@ -248,4 +248,75 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = `perfil?user=${data.username}`;
     });
 
+
+    // ===============================
+    // Alterar senha
+    // ===============================
+
+    document
+    .getElementById('changePasswordBtn')
+    .addEventListener('click', async () => {
+
+        const currentPassword =
+            document.getElementById('currentPassword').value;
+
+        const newPassword =
+            document.getElementById('newPassword').value;
+
+        const confirmPassword =
+            document.getElementById('confirmPassword').value;
+
+        if (!currentPassword ||
+            !newPassword ||
+            !confirmPassword) {
+
+            alert('Preencha todos os campos.');
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+
+            alert('A confirmação da senha não confere.');
+            return;
+
+        }
+
+        if (newPassword.length < 6) {
+
+            alert('A nova senha deve possuir pelo menos 6 caracteres.');
+            return;
+
+        }
+
+        const res = await fetch(
+            `${API_BASE}/users/me/password`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    currentPassword,
+                    newPassword
+                })
+            }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            alert(data.error);
+            return;
+        }
+
+        alert('Senha alterada com sucesso!');
+
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+
+    });
+
 });
+

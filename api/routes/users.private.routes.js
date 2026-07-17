@@ -2,6 +2,7 @@ const express = require('express');
 const dbPromise = require('../database/db');
 const auth = require('../middlewares/auth');
 const uploadAvatar = require('../middlewares/uploadAvatar');
+const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const path = require('path');
 
@@ -70,6 +71,94 @@ router.put('/me', auth, async (req, res) => {
         console.error(err);
         res.status(500).json({ error: 'Erro ao atualizar perfil' });
     }
+});
+
+/* ================================
+   Alterar senha
+================================ */
+router.put('/me/password', auth, async (req, res) => {
+
+    const db = await dbPromise;
+
+    try {
+
+        const {
+            currentPassword,
+            newPassword
+        } = req.body;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({
+                error: 'Informe a senha atual e a nova senha.'
+            });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({
+                error: 'A nova senha deve possuir pelo menos 6 caracteres.'
+            });
+        }
+
+        const user = await db.get(
+            `
+            SELECT password
+            FROM users
+            WHERE id = ?
+            `,
+            [req.user.id]
+        );
+
+        if (!user) {
+            return res.status(404).json({
+                error: 'Usuário não encontrado.'
+            });
+        }
+
+        const passwordOk = await bcrypt.compare(
+            currentPassword,
+            user.password
+        );
+
+        if (!passwordOk) {
+            return res.status(401).json({
+                error: 'Senha atual incorreta.'
+            });
+        }
+
+        if (currentPassword === newPassword) {
+            return res.status(400).json({
+                error: 'A nova senha deve ser diferente da senha atual.'
+            });
+        }
+
+        const hash = await bcrypt.hash(newPassword, 10);
+
+        await db.run(
+            `
+            UPDATE users
+            SET
+                password = ?,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+            `,
+            [hash, req.user.id]
+        );
+
+        res.json({
+            success: true,
+            message: 'Senha alterada com sucesso.'
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        res.status(500).json({
+            error: 'Erro ao alterar senha.'
+        });
+
+    }
+
 });
 
 
