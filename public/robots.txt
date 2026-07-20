@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+Disallow: /login
+Disallow: /register
+Disallow: /perfil
+Disallow: /editar-perfil
+Disallow: /wishlist
+Disallow: /my-collection
+Disallow: /my-reviews
+
+Sitemap: https://mycomics.com.br/sitemap.xml

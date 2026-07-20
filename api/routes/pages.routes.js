@@ -8,7 +8,9 @@ const pages = path.join(__dirname, '..', 'pages');
 // pages.routes.js
 const fs = require('fs');
 const ComicService = require('../services/comic.service');
-const renderComicPage = require('../utils/render-page');
+const CharacterService = require('../services/character.service');
+const { renderCharacterPage } = require('../utils/render-page');
+const { renderComicPage } = require('../utils/render-page');
 const { makeSlug } = require('../utils/slug');
 
 router.get('/quadrinho/:slug', async (req, res) => {
@@ -23,6 +25,26 @@ router.get('/quadrinho/:slug', async (req, res) => {
         }
 
         const html = renderComicPage(pages, comic, correctSlug);
+        res.send(html);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).sendFile(path.join(pages, '500.html'));
+    }
+});
+
+router.get('/personagem/:slug', async (req, res) => {
+    try {
+        const character = await CharacterService.findBySlug(req.params.slug);
+
+        if (!character) return res.status(404).sendFile(path.join(pages, '404.html'));
+
+        const correctSlug = makeSlug(character.id, character.alias || character.name);
+        if (req.params.slug !== correctSlug) {
+            return res.redirect(301, `/personagem/${correctSlug}`);
+        }
+
+        const html = renderCharacterPage(pages, character, correctSlug);
         res.send(html);
 
     } catch (err) {

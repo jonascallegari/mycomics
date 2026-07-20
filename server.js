@@ -40,6 +40,9 @@ app.use(
 // ===============================
 // ROTAS
 // ===============================
+const sitemapRoutes = require('./api/routes/sitemap.routes');
+
+app.use(sitemapRoutes);
 app.use(require('./api/routes/pages.routes'));
 app.use('/api/comics', require('./api/routes/comics.routes'));
 app.use('/api/characters', require('./api/routes/characters.routes'));
