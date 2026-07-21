@@ -73,25 +73,7 @@ function renderArc(arc) {
         cover.src = placeholder;
     };
 
-    cover.alt = `Capa do arco ${arc.name}`;
-
-    const schema = {
-    "@context": "https://schema.org",
-    "@type": "CreativeWork",
-    "name": arc.name,
-    "description": arc.description || "",
-    "image": arc.cover
-        ? BASE_URL + arc.cover
-        : "/assets/img/placeholder-comic.png",
-    "url": window.location.href
-    };
-
-    const script = document.createElement("script");
-
-    script.type = "application/ld+json";
-    script.textContent = JSON.stringify(schema);
-
-    document.head.appendChild(script);
+    cover.alt = `Capa do arco ${arc.name}`;    
 }
 
 function renderComics(comics) {
