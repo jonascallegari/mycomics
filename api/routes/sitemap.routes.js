@@ -148,7 +148,7 @@ router.get('/sitemap-arcos.xml', async (req, res) => {
     try {
         const db = await dbPromise;
 
-        const arcos = await db.all(`SELECT id, name FROM arcs`);
+        const arcos = await db.all(`SELECT id, name FROM story_arcs`); // era 'arcs'
 
         const entries = arcos.map(a => {
             const slug = makeSlug(a.id, a.name);

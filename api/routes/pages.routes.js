@@ -8,9 +8,14 @@ const pages = path.join(__dirname, '..', 'pages');
 // pages.routes.js
 const fs = require('fs');
 const ComicService = require('../services/comic.service');
+const { renderComicPage } = require('../utils/render-page');
+
 const CharacterService = require('../services/character.service');
 const { renderCharacterPage } = require('../utils/render-page');
-const { renderComicPage } = require('../utils/render-page');
+
+const ArcService = require('../services/arc.service');
+const { renderArcPage } = require('../utils/render-page');
+
 const { makeSlug } = require('../utils/slug');
 
 router.get('/quadrinho/:slug', async (req, res) => {
@@ -45,6 +50,26 @@ router.get('/personagem/:slug', async (req, res) => {
         }
 
         const html = renderCharacterPage(pages, character, correctSlug);
+        res.send(html);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).sendFile(path.join(pages, '500.html'));
+    }
+});
+
+router.get('/arco/:slug', async (req, res) => {
+    try {
+        const arc = await ArcService.findBySlug(req.params.slug);
+
+        if (!arc) return res.status(404).sendFile(path.join(pages, '404.html'));
+
+        const correctSlug = makeSlug(arc.id, arc.name);
+        if (req.params.slug !== correctSlug) {
+            return res.redirect(301, `/arco/${correctSlug}`);
+        }
+
+        const html = renderArcPage(pages, arc, correctSlug);
         res.send(html);
 
     } catch (err) {

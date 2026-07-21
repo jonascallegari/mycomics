@@ -96,4 +96,48 @@ function renderCharacterPage(pages, character, correctSlug) {
     return html;
 }
 
-module.exports = { renderComicPage, renderCharacterPage };
+function renderArcPage(pages, arc, correctSlug) {
+    let html = fs.readFileSync(path.join(pages, 'arco.html'), 'utf8');
+
+    const title = `${arc.name} | My Comics Database`;
+    const description = (arc.description
+        ? arc.description.slice(0, 155)
+        : `Veja a ordem de leitura completa do arco ${arc.name}.`
+    ).slice(0, 155);
+    const image = arc.cover
+        ? `${process.env.BASE_URL}${arc.cover}`
+        : `${process.env.BASE_URL}/assets/img/placeholder-comic.png`;
+    const url = `https://mycomics.com.br/arco/${correctSlug}`;
+
+    html = html
+        .replace(/<title id="pageTitle">[\s\S]*?<\/title>/, `<title id="pageTitle">${title}</title>`)
+        .replace(/(<meta name="description"\s+id="metaDescription"\s+content=")[^"]*(")/, `$1${description}$2`)
+        .replace(/(<meta property="og:title"\s+id="ogTitle"\s+content=")[^"]*(")/, `$1${title}$2`)
+        .replace(/(<meta property="og:description"\s+id="ogDescription"\s+content=")[^"]*(")/, `$1${description}$2`)
+        .replace(/<meta property="og:image"[\s\S]*?content=".*?">/, `<meta property="og:image" content="${image}">`)
+        .replace(/<meta property="og:url"[\s\S]*?content=".*?">/, `<meta property="og:url" content="${url}">`);
+
+    // canonical: essa página não tem nenhum <link rel="canonical"> — vou inserir
+    html = html.replace('</head>', `    <link rel="canonical" href="${url}">\n</head>`);
+
+    // pré-preenche H1 (arco.js sobrescreve depois sem conflito)
+    html = html.replace('<h1 id="arcName"></h1>', `<h1 id="arcName">${arc.name}</h1>`);
+
+    const jsonLd = `
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "CreativeWork",
+        "name": ${JSON.stringify(arc.name)},
+        "description": ${JSON.stringify(description)},
+        "image": ${JSON.stringify(image)},
+        "url": ${JSON.stringify(url)}
+    }
+    </script>`;
+
+    html = html.replace('</head>', `${jsonLd}\n</head>`);
+
+    return html;
+}
+
+module.exports = { renderComicPage, renderCharacterPage, renderArcPage };
