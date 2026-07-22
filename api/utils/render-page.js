@@ -140,4 +140,186 @@ function renderArcPage(pages, arc, correctSlug) {
     return html;
 }
 
-module.exports = { renderComicPage, renderCharacterPage, renderArcPage };
+// Série
+function renderSeriePage(pages, serie, correctSlug) {
+    let html = fs.readFileSync(path.join(pages, 'serie.html'), 'utf8');
+
+    const title = `${serie.name} | My Comics`;
+    const description = (serie.description
+        ? serie.description.slice(0, 155)
+        : `Confira todas as edições da série ${serie.name}${serie.original_publisher_name ? `, publicada por ${serie.original_publisher_name}` : ''}.`
+    ).slice(0, 155);
+    const image = serie.cover
+        ? `${process.env.BASE_URL}${serie.cover}`
+        : `${process.env.BASE_URL}/assets/img/placeholder-comic.png`;
+    const url = `https://mycomics.com.br/serie/${correctSlug}`;
+
+    html = html
+        .replace(/<title>[\s\S]*?<\/title>/, `<title>${title}</title>`)
+        .replace(/<meta name="description"[\s\S]*?content=".*?">/, `<meta name="description" content="${description}">`)
+        .replace(/<link rel="canonical"[\s\S]*?href=".*?">/, `<link rel="canonical" href="${url}">`)
+        .replace(/<meta property="og:type"[\s\S]*?content=".*?">/, `<meta property="og:type" content="website">`)
+        .replace(/<meta property="og:title"[\s\S]*?content=".*?">/, `<meta property="og:title" content="${title}">`)
+        .replace(/<meta property="og:description"[\s\S]*?content=".*?">/, `<meta property="og:description" content="${description}">`)
+        .replace(/<meta property="og:image"[\s\S]*?content=".*?">/, `<meta property="og:image" content="${image}">`)
+        .replace(/<meta property="og:url"[\s\S]*?content=".*?">/, `<meta property="og:url" content="${url}">`);
+
+    // H2 -> H1, pré-preenchido
+    html = html.replace('<h2 id="seriesName"></h2>', `<h1 id="seriesName">${serie.name}</h1>`);
+
+    const jsonLd = `
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "CreativeWorkSeries",
+        "name": ${JSON.stringify(serie.name)},
+        "description": ${JSON.stringify(description)},
+        "image": ${JSON.stringify(image)},
+        "publisher": { "@type": "Organization", "name": ${JSON.stringify(serie.original_publisher_name || serie.publisher_name || '')} },
+        "url": ${JSON.stringify(url)}
+    }
+    </script>`;
+
+    html = html.replace('</head>', `${jsonLd}\n</head>`);
+
+    return html;
+}
+
+// Creator
+function renderCreatorPage(pages, creator, correctSlug) {
+    let html = fs.readFileSync(path.join(pages, 'creator.html'), 'utf8');
+
+    const title = `${creator.name} | My Comics`;
+    const description = (creator.bio
+        ? creator.bio.slice(0, 155)
+        : `Conheça ${creator.name}${creator.role ? `, ${creator.role}` : ''} de quadrinhos. Veja obras e histórico.`
+    ).slice(0, 155);
+    const image = creator.image
+        ? `${process.env.BASE_URL}${creator.image}`
+        : `${process.env.BASE_URL}/assets/img/placeholder-character.png`;
+    const url = `https://mycomics.com.br/criador/${correctSlug}`;
+
+    html = html
+        .replace(/<title>[\s\S]*?<\/title>/, `<title>${title}</title>`)
+        .replace(/<meta name="description"[\s\S]*?content=".*?">/, `<meta name="description" content="${description}">`)
+        .replace(/<link rel="canonical"[\s\S]*?href=".*?">/, `<link rel="canonical" href="${url}">`)
+        .replace(/<meta property="og:type"[\s\S]*?content=".*?">/, `<meta property="og:type" content="profile">`)
+        .replace(/<meta property="og:title"[\s\S]*?content=".*?">/, `<meta property="og:title" content="${title}">`)
+        .replace(/<meta property="og:description"[\s\S]*?content=".*?">/, `<meta property="og:description" content="${description}">`)
+        .replace(/<meta property="og:image"[\s\S]*?content=".*?">/, `<meta property="og:image" content="${image}">`)
+        .replace(/<meta property="og:url"[\s\S]*?content=".*?">/, `<meta property="og:url" content="${url}">`);
+
+    // pré-preenche H1 (creatorDetail.js sobrescreve depois sem conflito)
+    html = html.replace('<h1 id="creatorName"></h1>', `<h1 id="creatorName">${creator.name}</h1>`);
+
+    const jsonLd = `
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": ${JSON.stringify(creator.name)},
+        "jobTitle": ${JSON.stringify(creator.role || '')},
+        "image": ${JSON.stringify(image)},
+        "description": ${JSON.stringify(description)}
+    }
+    </script>`;
+
+    html = html.replace('</head>', `${jsonLd}\n</head>`);
+
+    return html;
+}
+
+// Editora
+function renderPublisherPage(pages, publisher, correctSlug) {
+    let html = fs.readFileSync(path.join(pages, 'publisher.html'), 'utf8');
+
+    const title = `${publisher.name} | My Comics`;
+    const description = (publisher.description
+        ? publisher.description.slice(0, 155)
+        : `Confira os quadrinhos publicados pela editora ${publisher.name}.`
+    ).slice(0, 155);
+    const image = publisher.logo
+        ? `${process.env.BASE_URL}${publisher.logo}`
+        : `${process.env.BASE_URL}/assets/img/social-cover.png`;
+    const url = `https://mycomics.com.br/editora/${correctSlug}`;
+
+    html = html
+        .replace(/<title>[\s\S]*?<\/title>/, `<title>${title}</title>`)
+        .replace(/<meta name="description"[\s\S]*?content=".*?">/, `<meta name="description" content="${description}">`)
+        .replace(/<link rel="canonical"[\s\S]*?href=".*?">/, `<link rel="canonical" href="${url}">`)
+        .replace(/<meta property="og:type"[\s\S]*?content=".*?">/, `<meta property="og:type" content="website">`)
+        .replace(/<meta property="og:title"[\s\S]*?content=".*?">/, `<meta property="og:title" content="${title}">`)
+        .replace(/<meta property="og:description"[\s\S]*?content=".*?">/, `<meta property="og:description" content="${description}">`)
+        .replace(/<meta property="og:image"[\s\S]*?content=".*?">/, `<meta property="og:image" content="${image}">`)
+        .replace(/<meta property="og:url"[\s\S]*?content=".*?">/, `<meta property="og:url" content="${url}">`);
+
+    // pré-preenche H1 (publisher.js sobrescreve depois sem conflito)
+    html = html.replace('<h1 id="publisherName"></h1>', `<h1 id="publisherName">${publisher.name}</h1>`);
+
+    const jsonLd = `
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": ${JSON.stringify(publisher.name)},
+        "description": ${JSON.stringify(description)},
+        "logo": ${JSON.stringify(image)},
+        ${publisher.website ? `"url": ${JSON.stringify(publisher.website)},` : ''}
+        "sameAs": ${JSON.stringify(url)}
+    }
+    </script>`;
+
+    html = html.replace('</head>', `${jsonLd}\n</head>`);
+
+    return html;
+}
+
+// Home
+function renderHomePage(pages, homeData) {
+    let html = fs.readFileSync(path.join(pages, 'index.html'), 'utf8');
+
+    const firstFeatured = homeData.featured[0];
+
+    if (firstFeatured) {
+        const issue = firstFeatured.issue_number ? ` #${firstFeatured.issue_number}` : '';
+        const featuredTitle = `${firstFeatured.title}${issue}`;
+
+        // Pré-preenche o H1 (home.js sobrescreve depois no client, sem conflito)
+        html = html.replace(
+            /<h1 id="featuredTitle" class="featured-title">[\s\S]*?<\/h1>/,
+            `<h1 id="featuredTitle" class="featured-title">${featuredTitle}</h1>`
+        );
+    }
+
+    // JSON-LD adicional: ItemList dos populares (ajuda o Google a entender a vitrine)
+    if (homeData.popular?.length) {
+        const itemListLd = `
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "itemListElement": [
+            ${homeData.popular.slice(0, 10).map((c, i) => `{
+                "@type": "ListItem",
+                "position": ${i + 1},
+                "url": "https://mycomics.com.br${require('./slug').makeSlug ? '/quadrinho/' + require('./slug').makeSlug(c.id, c.title) : ''}"
+            }`).join(',')}
+        ]
+    }
+    </script>`;
+
+        html = html.replace('</head>', `${itemListLd}\n</head>`);
+    }
+
+    return html;
+}
+
+module.exports = {
+    renderComicPage,
+    renderCharacterPage,
+    renderArcPage,
+    renderSeriePage,
+    renderCreatorPage,
+    renderPublisherPage,
+    renderHomePage
+};
