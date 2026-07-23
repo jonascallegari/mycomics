@@ -210,4 +210,10 @@ router.get('/my-reviews', page('my-reviews'));
 
 router.get('/search', page('search'));
 
+router.get('/forgot-password', page('forgot-password'));
+
+router.get('/reset-password', page('reset-password'));
+
+router.get('/confirmar-email', page('confirmar-email'));
+
 module.exports = router;

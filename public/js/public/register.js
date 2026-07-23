@@ -13,14 +13,8 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     try {
         const res = await fetch(`${API_BASE}/auth/register`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                username,
-                email,
-                password
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password })
         });
 
         const data = await res.json();
@@ -30,8 +24,8 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
             return;
         }
 
-        alert('Cadastro realizado com sucesso!');
-        window.location.href = `/login`;
+        alert('Cadastro realizado! Verifique seu e-mail para ativar sua conta antes de fazer login.');
+        window.location.href = '/login';
 
     } catch (err) {
         console.error(err);
