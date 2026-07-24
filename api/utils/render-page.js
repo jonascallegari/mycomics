@@ -52,6 +52,7 @@ function renderComicPage(pages, comic, correctSlug) {
     return html;
 }
 
+//Personagem
 function renderCharacterPage(pages, character, correctSlug) {
     let html = fs.readFileSync(path.join(pages, 'character.html'), 'utf8');
 
@@ -77,7 +78,12 @@ function renderCharacterPage(pages, character, correctSlug) {
         .replace(/<meta property="og:url"[\s\S]*?content=".*?">/, `<meta property="og:url" content="${url}">`);
 
     // Pré-preenche H1 (o characterDetail.js sobrescreve depois sem conflito)
-    html = html.replace('<h1 id="characterName"></h1>', `<h1 id="characterName">${displayName}</h1>`);
+    html = html
+        .replace('<h1 id="characterName"></h1>', `<h1 id="characterName">${displayName}</h1>`)
+        .replace(
+            '<p id="characterHistory" class="text-justify"></p>',
+            `<p id="characterHistory" class="text-justify">${character.history || ''}</p>`
+        );
 
     const jsonLd = `
     <script type="application/ld+json">
@@ -96,6 +102,7 @@ function renderCharacterPage(pages, character, correctSlug) {
     return html;
 }
 
+//Arco
 function renderArcPage(pages, arc, correctSlug) {
     let html = fs.readFileSync(path.join(pages, 'arco.html'), 'utf8');
 
@@ -117,11 +124,15 @@ function renderArcPage(pages, arc, correctSlug) {
         .replace(/<meta property="og:image"[\s\S]*?content=".*?">/, `<meta property="og:image" content="${image}">`)
         .replace(/<meta property="og:url"[\s\S]*?content=".*?">/, `<meta property="og:url" content="${url}">`);
 
-    // canonical: essa página não tem nenhum <link rel="canonical"> — vou inserir
     html = html.replace('</head>', `    <link rel="canonical" href="${url}">\n</head>`);
 
-    // pré-preenche H1 (arco.js sobrescreve depois sem conflito)
-    html = html.replace('<h1 id="arcName"></h1>', `<h1 id="arcName">${arc.name}</h1>`);
+    // Pré-preenche H1 e descrição (arco.js sobrescreve depois sem conflito)
+    html = html
+        .replace('<h1 id="arcName"></h1>', `<h1 id="arcName">${arc.name}</h1>`)
+        .replace(
+            '<p id="arcDescription"></p>',
+            `<p id="arcDescription">${arc.description || ''}</p>`
+        );
 
     const jsonLd = `
     <script type="application/ld+json">
@@ -164,8 +175,13 @@ function renderSeriePage(pages, serie, correctSlug) {
         .replace(/<meta property="og:image"[\s\S]*?content=".*?">/, `<meta property="og:image" content="${image}">`)
         .replace(/<meta property="og:url"[\s\S]*?content=".*?">/, `<meta property="og:url" content="${url}">`);
 
-    // H2 -> H1, pré-preenchido
-    html = html.replace('<h2 id="seriesName"></h2>', `<h1 id="seriesName">${serie.name}</h1>`);
+    // Pré-preenche H1 e descrição (serie.js sobrescreve depois sem conflito)
+    html = html
+        .replace('<h2 id="seriesName"></h2>', `<h1 id="seriesName">${serie.name}</h1>`)
+        .replace(
+            '<p id="seriesDescription"></p>',
+            `<p id="seriesDescription">${serie.description || ''}</p>`
+        );
 
     const jsonLd = `
     <script type="application/ld+json">
@@ -209,8 +225,13 @@ function renderCreatorPage(pages, creator, correctSlug) {
         .replace(/<meta property="og:image"[\s\S]*?content=".*?">/, `<meta property="og:image" content="${image}">`)
         .replace(/<meta property="og:url"[\s\S]*?content=".*?">/, `<meta property="og:url" content="${url}">`);
 
-    // pré-preenche H1 (creatorDetail.js sobrescreve depois sem conflito)
-    html = html.replace('<h1 id="creatorName"></h1>', `<h1 id="creatorName">${creator.name}</h1>`);
+    // Pré-preenche H1 e biografia (creatorDetail.js sobrescreve depois sem conflito)
+    html = html
+        .replace('<h1 id="creatorName"></h1>', `<h1 id="creatorName">${creator.name}</h1>`)
+        .replace(
+            '<p id="creatorBio" class="text-justify"></p>',
+            `<p id="creatorBio" class="text-justify">${creator.bio || ''}</p>`
+        );
 
     const jsonLd = `
     <script type="application/ld+json">
@@ -253,8 +274,13 @@ function renderPublisherPage(pages, publisher, correctSlug) {
         .replace(/<meta property="og:image"[\s\S]*?content=".*?">/, `<meta property="og:image" content="${image}">`)
         .replace(/<meta property="og:url"[\s\S]*?content=".*?">/, `<meta property="og:url" content="${url}">`);
 
-    // pré-preenche H1 (publisher.js sobrescreve depois sem conflito)
-    html = html.replace('<h1 id="publisherName"></h1>', `<h1 id="publisherName">${publisher.name}</h1>`);
+    // Pré-preenche H1 e descrição (publisher.js sobrescreve depois sem conflito)
+    html = html
+        .replace('<h1 id="publisherName"></h1>', `<h1 id="publisherName">${publisher.name}</h1>`)
+        .replace(
+            '<p id="publisherDescription" class="text-justify"></p>',
+            `<p id="publisherDescription" class="text-justify">${publisher.description || ''}</p>`
+        );
 
     const jsonLd = `
     <script type="application/ld+json">
