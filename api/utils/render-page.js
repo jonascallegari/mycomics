@@ -1,7 +1,15 @@
 // utils/render-page.js
 const fs = require('fs');
 const path = require('path');
+const { makeSlug } = require('./slug');
 
+function escapeAttr(str) {
+    return String(str || '').replace(/"/g, '&quot;');
+}
+
+// ============================
+// COMIC
+// ============================
 function renderComicPage(pages, comic, correctSlug) {
     let html = fs.readFileSync(path.join(pages, 'comic.html'), 'utf8');
 
@@ -10,6 +18,7 @@ function renderComicPage(pages, comic, correctSlug) {
     const description = (comic.synopsis || `Confira detalhes de ${comic.title}, publicado por ${comic.publisher_name || 'editora desconhecida'}.`).slice(0, 155);
     const image = comic.cover ? `${process.env.BASE_URL}${comic.cover}` : `${process.env.BASE_URL}/assets/img/placeholder-comic.png`;
     const url = `https://mycomics.com.br/quadrinho/${correctSlug}`;
+    const coverAlt = escapeAttr(`Capa de ${comic.title}${issueLabel}`);
 
     html = html
         .replace(/<title>[\s\S]*?<\/title>/, `<title>${title}</title>`)
@@ -21,13 +30,17 @@ function renderComicPage(pages, comic, correctSlug) {
         .replace(/<meta property="og:image"[\s\S]*?content=".*?">/, `<meta property="og:image" content="${image}">`)
         .replace(/<meta property="og:url"[\s\S]*?content=".*?">/, `<meta property="og:url" content="${url}">`);
 
-    // Pré-preenche título e sinopse no HTML (o JS sobrescreve depois, sem conflito)
     html = html
         .replace('<span id="comicTitle"></span>', `<span id="comicTitle">${comic.title}</span>`)
-        .replace('<div id="comicSynopsis" class="text-white synopsis-box"></div>',
-            `<div id="comicSynopsis" class="text-white synopsis-box">${comic.synopsis || ''}</div>`);    
+        .replace(
+            '<div id="comicSynopsis" class="text-white synopsis-box"></div>',
+            `<div id="comicSynopsis" class="text-white synopsis-box">${comic.synopsis || ''}</div>`
+        )
+        .replace(
+            '<img id="comicCover" class="comic-image img-fluid rounded shadow">',
+            `<img id="comicCover" class="comic-image img-fluid rounded shadow" alt="${coverAlt}" title="${coverAlt}">`
+        );
 
-    // JSON-LD estruturado
     const jsonLd = `
     <script type="application/ld+json">
     {
@@ -52,7 +65,9 @@ function renderComicPage(pages, comic, correctSlug) {
     return html;
 }
 
-//Personagem
+// ============================
+// CHARACTER
+// ============================
 function renderCharacterPage(pages, character, correctSlug) {
     let html = fs.readFileSync(path.join(pages, 'character.html'), 'utf8');
 
@@ -66,6 +81,7 @@ function renderCharacterPage(pages, character, correctSlug) {
         ? `${process.env.BASE_URL}${character.image}`
         : `${process.env.BASE_URL}/assets/img/placeholder-character.png`;
     const url = `https://mycomics.com.br/personagem/${correctSlug}`;
+    const imageAlt = escapeAttr(`${displayName}${character.publisher_name ? ` - ${character.publisher_name}` : ''}`);
 
     html = html
         .replace(/<title>[\s\S]*?<\/title>/, `<title>${title}</title>`)
@@ -77,12 +93,15 @@ function renderCharacterPage(pages, character, correctSlug) {
         .replace(/<meta property="og:image"[\s\S]*?content=".*?">/, `<meta property="og:image" content="${image}">`)
         .replace(/<meta property="og:url"[\s\S]*?content=".*?">/, `<meta property="og:url" content="${url}">`);
 
-    // Pré-preenche H1 (o characterDetail.js sobrescreve depois sem conflito)
     html = html
         .replace('<h1 id="characterName"></h1>', `<h1 id="characterName">${displayName}</h1>`)
         .replace(
             '<p id="characterHistory" class="text-justify"></p>',
             `<p id="characterHistory" class="text-justify">${character.history || ''}</p>`
+        )
+        .replace(
+            '<img id="characterImage" class="character-image">',
+            `<img id="characterImage" class="character-image" alt="${imageAlt}" title="${imageAlt}">`
         );
 
     const jsonLd = `
@@ -102,7 +121,9 @@ function renderCharacterPage(pages, character, correctSlug) {
     return html;
 }
 
-//Arco
+// ============================
+// ARC
+// ============================
 function renderArcPage(pages, arc, correctSlug) {
     let html = fs.readFileSync(path.join(pages, 'arco.html'), 'utf8');
 
@@ -115,6 +136,7 @@ function renderArcPage(pages, arc, correctSlug) {
         ? `${process.env.BASE_URL}${arc.cover}`
         : `${process.env.BASE_URL}/assets/img/placeholder-comic.png`;
     const url = `https://mycomics.com.br/arco/${correctSlug}`;
+    const coverAlt = escapeAttr(`Capa do arco ${arc.name}`);
 
     html = html
         .replace(/<title id="pageTitle">[\s\S]*?<\/title>/, `<title id="pageTitle">${title}</title>`)
@@ -126,12 +148,15 @@ function renderArcPage(pages, arc, correctSlug) {
 
     html = html.replace('</head>', `    <link rel="canonical" href="${url}">\n</head>`);
 
-    // Pré-preenche H1 e descrição (arco.js sobrescreve depois sem conflito)
     html = html
         .replace('<h1 id="arcName"></h1>', `<h1 id="arcName">${arc.name}</h1>`)
         .replace(
             '<p id="arcDescription"></p>',
             `<p id="arcDescription">${arc.description || ''}</p>`
+        )
+        .replace(
+            '<img id="arcCover" class="img-fluid shadow rounded" alt="">',
+            `<img id="arcCover" class="img-fluid shadow rounded" alt="${coverAlt}" title="${coverAlt}">`
         );
 
     const jsonLd = `
@@ -151,7 +176,9 @@ function renderArcPage(pages, arc, correctSlug) {
     return html;
 }
 
-// Série
+// ============================
+// SERIE
+// ============================
 function renderSeriePage(pages, serie, correctSlug) {
     let html = fs.readFileSync(path.join(pages, 'serie.html'), 'utf8');
 
@@ -164,6 +191,7 @@ function renderSeriePage(pages, serie, correctSlug) {
         ? `${process.env.BASE_URL}${serie.cover}`
         : `${process.env.BASE_URL}/assets/img/placeholder-comic.png`;
     const url = `https://mycomics.com.br/serie/${correctSlug}`;
+    const coverAlt = escapeAttr(`Capa da série ${serie.name}`);
 
     html = html
         .replace(/<title>[\s\S]*?<\/title>/, `<title>${title}</title>`)
@@ -175,12 +203,15 @@ function renderSeriePage(pages, serie, correctSlug) {
         .replace(/<meta property="og:image"[\s\S]*?content=".*?">/, `<meta property="og:image" content="${image}">`)
         .replace(/<meta property="og:url"[\s\S]*?content=".*?">/, `<meta property="og:url" content="${url}">`);
 
-    // Pré-preenche H1 e descrição (serie.js sobrescreve depois sem conflito)
     html = html
         .replace('<h2 id="seriesName"></h2>', `<h1 id="seriesName">${serie.name}</h1>`)
         .replace(
             '<p id="seriesDescription"></p>',
             `<p id="seriesDescription">${serie.description || ''}</p>`
+        )
+        .replace(
+            '<img id="seriesCover" class="img-fluid d-none" />',
+            `<img id="seriesCover" class="img-fluid d-none" alt="${coverAlt}" title="${coverAlt}" />`
         );
 
     const jsonLd = `
@@ -201,7 +232,9 @@ function renderSeriePage(pages, serie, correctSlug) {
     return html;
 }
 
-// Creator
+// ============================
+// CREATOR
+// ============================
 function renderCreatorPage(pages, creator, correctSlug) {
     let html = fs.readFileSync(path.join(pages, 'creator.html'), 'utf8');
 
@@ -214,6 +247,7 @@ function renderCreatorPage(pages, creator, correctSlug) {
         ? `${process.env.BASE_URL}${creator.image}`
         : `${process.env.BASE_URL}/assets/img/placeholder-character.png`;
     const url = `https://mycomics.com.br/criador/${correctSlug}`;
+    const imageAlt = escapeAttr(`${creator.name}${creator.role ? ` - ${creator.role}` : ''}`);
 
     html = html
         .replace(/<title>[\s\S]*?<\/title>/, `<title>${title}</title>`)
@@ -225,12 +259,15 @@ function renderCreatorPage(pages, creator, correctSlug) {
         .replace(/<meta property="og:image"[\s\S]*?content=".*?">/, `<meta property="og:image" content="${image}">`)
         .replace(/<meta property="og:url"[\s\S]*?content=".*?">/, `<meta property="og:url" content="${url}">`);
 
-    // Pré-preenche H1 e biografia (creatorDetail.js sobrescreve depois sem conflito)
     html = html
         .replace('<h1 id="creatorName"></h1>', `<h1 id="creatorName">${creator.name}</h1>`)
         .replace(
             '<p id="creatorBio" class="text-justify"></p>',
             `<p id="creatorBio" class="text-justify">${creator.bio || ''}</p>`
+        )
+        .replace(
+            '<img id="creatorImage" class="creator-image">',
+            `<img id="creatorImage" class="creator-image" alt="${imageAlt}" title="${imageAlt}">`
         );
 
     const jsonLd = `
@@ -250,7 +287,9 @@ function renderCreatorPage(pages, creator, correctSlug) {
     return html;
 }
 
-// Editora
+// ============================
+// PUBLISHER
+// ============================
 function renderPublisherPage(pages, publisher, correctSlug) {
     let html = fs.readFileSync(path.join(pages, 'publisher.html'), 'utf8');
 
@@ -263,6 +302,7 @@ function renderPublisherPage(pages, publisher, correctSlug) {
         ? `${process.env.BASE_URL}${publisher.logo}`
         : `${process.env.BASE_URL}/assets/img/social-cover.png`;
     const url = `https://mycomics.com.br/editora/${correctSlug}`;
+    const logoAlt = escapeAttr(`Logo da editora ${publisher.name}`);
 
     html = html
         .replace(/<title>[\s\S]*?<\/title>/, `<title>${title}</title>`)
@@ -274,12 +314,15 @@ function renderPublisherPage(pages, publisher, correctSlug) {
         .replace(/<meta property="og:image"[\s\S]*?content=".*?">/, `<meta property="og:image" content="${image}">`)
         .replace(/<meta property="og:url"[\s\S]*?content=".*?">/, `<meta property="og:url" content="${url}">`);
 
-    // Pré-preenche H1 e descrição (publisher.js sobrescreve depois sem conflito)
     html = html
         .replace('<h1 id="publisherName"></h1>', `<h1 id="publisherName">${publisher.name}</h1>`)
         .replace(
             '<p id="publisherDescription" class="text-justify"></p>',
             `<p id="publisherDescription" class="text-justify">${publisher.description || ''}</p>`
+        )
+        .replace(
+            '<img id="publisherLogo" class="publisher-logo" />',
+            `<img id="publisherLogo" class="publisher-logo" alt="${logoAlt}" title="${logoAlt}" />`
         );
 
     const jsonLd = `
@@ -300,7 +343,9 @@ function renderPublisherPage(pages, publisher, correctSlug) {
     return html;
 }
 
-// Home
+// ============================
+// HOME
+// ============================
 function renderHomePage(pages, homeData) {
     let html = fs.readFileSync(path.join(pages, 'index.html'), 'utf8');
 
@@ -309,15 +354,19 @@ function renderHomePage(pages, homeData) {
     if (firstFeatured) {
         const issue = firstFeatured.issue_number ? ` #${firstFeatured.issue_number}` : '';
         const featuredTitle = `${firstFeatured.title}${issue}`;
+        const featuredAlt = escapeAttr(`Capa de ${featuredTitle}`);
 
-        // Pré-preenche o H1 (home.js sobrescreve depois no client, sem conflito)
-        html = html.replace(
-            /<h1 id="featuredTitle" class="featured-title">[\s\S]*?<\/h1>/,
-            `<h1 id="featuredTitle" class="featured-title">${featuredTitle}</h1>`
-        );
+        html = html
+            .replace(
+                /<h1 id="featuredTitle" class="featured-title">[\s\S]*?<\/h1>/,
+                `<h1 id="featuredTitle" class="featured-title">${featuredTitle}</h1>`
+            )
+            .replace(
+                /<img\s+id="featuredCover"\s+class="featured-cover"\s+src=""\s+alt="Capa do quadrinho">/,
+                `<img id="featuredCover" class="featured-cover" src="" alt="${featuredAlt}" title="${featuredAlt}">`
+            );
     }
 
-    // JSON-LD adicional: ItemList dos populares (ajuda o Google a entender a vitrine)
     if (homeData.popular?.length) {
         const itemListLd = `
     <script type="application/ld+json">
@@ -328,7 +377,7 @@ function renderHomePage(pages, homeData) {
             ${homeData.popular.slice(0, 10).map((c, i) => `{
                 "@type": "ListItem",
                 "position": ${i + 1},
-                "url": "https://mycomics.com.br${require('./slug').makeSlug ? '/quadrinho/' + require('./slug').makeSlug(c.id, c.title) : ''}"
+                "url": "https://mycomics.com.br/quadrinho/${makeSlug(c.id, c.title)}"
             }`).join(',')}
         ]
     }

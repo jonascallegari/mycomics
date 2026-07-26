@@ -153,17 +153,12 @@ function renderFeaturedThumbs(activeIndex) {
     const thumbs = document.getElementById("featuredThumbs");
 
     thumbs.innerHTML = featured.map((c, i) => `
-
-        <div class="featured-thumb ${i === activeIndex ? 'active' : ''}"
-             onclick="goToFeatured(${i})">
-
+        <div class="featured-thumb ${i === activeIndex ? 'active' : ''}" onclick="goToFeatured(${i})">
             <img
                 src="${c.cover ? BASE_URL + c.cover : placeholder}"
                 onerror="this.onerror=null;this.src='${placeholder}'"
-                alt="${c.title}">
-
+                alt="Capa de ${c.title}">
         </div>
-
     `).join("");
 
 }
@@ -250,9 +245,11 @@ function createComicCard(comic) {
             </div>
 
             <img src="${BASE_URL}${comic.cover}"
-                 class="comic-cover w-100"
-                 loading="lazy"
-                 onerror="this.src='/assets/img/placeholder-comic.png'">
+            class="comic-cover w-100"
+            loading="lazy"
+            alt="Capa de ${comic.title}${comic.display_issue ? ` ${comic.display_issue}` : ''}"
+            title="${comic.title}"
+            onerror="this.src='/assets/img/placeholder-comic.png'">
 
             <div class="p-2">
 
@@ -416,9 +413,11 @@ function loadPopularCharacters() {
                      style="min-width:160px">
 
                     <img src="${BASE_URL}${c.image}"
-                         class="comic-cover w-100"
-                         loading="lazy"
-                         onerror="this.src='/assets/img/placeholder-character.png'">
+                    class="comic-cover w-100"
+                    loading="lazy"
+                    alt="${c.alias || c.name}"
+                    title="${c.alias || c.name}"
+                    onerror="this.src='/assets/img/placeholder-character.png'">
 
                     <div class="p-2">
 
