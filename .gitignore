@@ -1,5 +1,7 @@
 node_modules
 package-lock.json
 api/database/icdb.db
+api/database/icdb.local.db
 api/database/*.db
 api/database/*.db-journal
+.env
