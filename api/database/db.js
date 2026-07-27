@@ -2,6 +2,8 @@ const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 const path = require('path'); // Não esqueça de importar o path
 
+// Se APP_DATA_DIR existir (produção), usa caminho absoluto fora do repo.
+// Se não existir (ambiente local), cai no comportamento antigo (pasta do próprio projeto).
 const dbFile = process.env.APP_DATA_DIR
     ? path.join(process.env.APP_DATA_DIR, 'database', 'icdb.db')
     : path.join(__dirname, process.env.DB_FILE || 'icdb.db');
