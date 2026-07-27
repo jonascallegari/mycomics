@@ -10,8 +10,7 @@ const dbFile = process.env.APP_DATA_DIR
 
 async function initDB() {
     const db = await open({
-        // Isso garante o caminho absoluto: api/database/icdb.db
-        filename: path.join(__dirname, dbFile),
+        filename: dbFile,
         driver: sqlite3.Database
     });
 
