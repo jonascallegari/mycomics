@@ -1,3 +1,7 @@
+// db.js — topo do arquivo, temporário para debug
+console.log('APP_DATA_DIR recebido:', process.env.APP_DATA_DIR);
+console.log('__dirname:', __dirname);
+
 const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 const path = require('path'); // Não esqueça de importar o path
