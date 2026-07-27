@@ -2,7 +2,9 @@ const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 const path = require('path'); // Não esqueça de importar o path
 
-const dbFile = process.env.DB_FILE || 'icdb.db';
+const dbFile = process.env.APP_DATA_DIR
+    ? path.join(process.env.APP_DATA_DIR, 'database', 'icdb.db')
+    : path.join(__dirname, process.env.DB_FILE || 'icdb.db');
 
 async function initDB() {
     const db = await open({
