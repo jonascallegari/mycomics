@@ -152,30 +152,28 @@ router.get('/characters', async (req, res) => {
     try {
         const db = await dbPromise;
 
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 12;
         const search = req.query.search || '';
         const publisher = req.query.publisher || null;
         const letter = req.query.letter || null;
+        const order = req.query.order || 'az'; // 'az' (padrão, comportamento atual) ou 'popular'
 
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 12;
         const offset = (page - 1) * limit;
 
         let where = 'WHERE 1 = 1';
         const params = [];
 
-        // 🔍 busca
         if (search) {
             where += ' AND (c.name LIKE ? OR c.alias LIKE ?)';
             params.push(`%${search}%`, `%${search}%`);
         }
 
-        // 🏢 editora
         if (publisher) {
             where += ' AND c.publisher_id = ?';
             params.push(publisher);
         }
 
-        // 🔤 filtro por letra (USANDO APENAS ALIAS)
         if (letter) {
             where += ' AND c.alias IS NOT NULL AND LOWER(c.alias) LIKE LOWER(?)';
             params.push(`${letter}%`);
@@ -187,17 +185,24 @@ router.get('/characters', async (req, res) => {
             ${where}
         `, params);
 
+        const orderBy = order === 'popular'
+            ? 'appearances DESC, c.alias ASC'
+            : 'c.alias ASC';
+
         const rows = await db.all(`
             SELECT 
                 c.id,
                 c.name,
                 c.alias,
                 c.image,
-                p.name AS publisher_name
+                p.name AS publisher_name,
+                COUNT(DISTINCT sc.story_id) AS appearances
             FROM characters c
             LEFT JOIN publishers p ON p.id = c.publisher_id
+            LEFT JOIN story_characters sc ON sc.character_id = c.id
             ${where}
-            ORDER BY c.alias ASC
+            GROUP BY c.id
+            ORDER BY ${orderBy}
             LIMIT ? OFFSET ?
         `, [...params, limit, offset]);
 

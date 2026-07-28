@@ -394,7 +394,7 @@ function loadTopComics() {
  */
 function loadPopularCharacters() {
 
-    fetch(`${API_BASE}/public/characters?limit=12`)
+    fetch(`${API_BASE}/public/characters?limit=12&order=popular`)
         .then(res => res.json())
         .then(response => {
 
