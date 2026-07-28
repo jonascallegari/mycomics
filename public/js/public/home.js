@@ -125,8 +125,19 @@ function renderFeatured(index, animate = false) {
         </span>
     `;
 
+    function truncateText(text, maxLength = 200) {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+
+    // corta no último espaço antes do limite, pra não partir palavra no meio
+    const cut = text.slice(0, maxLength);
+    const lastSpace = cut.lastIndexOf(' ');
+
+    return `${cut.slice(0, lastSpace > 0 ? lastSpace : maxLength)}...`;
+}
+
     document.getElementById("featuredDescription").innerHTML =
-        comic.synopsis || '';
+        truncateText(comic.synopsis, 200);
 
     document.getElementById("featuredButton").href =
         Routes.comic(comic);

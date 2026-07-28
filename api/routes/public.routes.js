@@ -59,6 +59,7 @@ router.get('/comics', async (req, res) => {
                 c.cover,
                 c.year,
                 c.issue_number,
+                c.synopsis,
                 c.publisher_id,
                 p.name AS publisher_name,
                 op.id   AS original_publisher_id,
