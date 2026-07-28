@@ -1,15 +1,10 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { DATA_DIR } = require('../utils/paths');
 
-const uploadDir = path.join(
-    __dirname,
-    '..',
-    'uploads',
-    'avatars'
-);
+const uploadDir = path.join(DATA_DIR, 'avatars');
 
-// Garante que a pasta existe
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -27,7 +22,6 @@ const storage = multer.diskStorage({
 
 const fileFilter = (req, file, cb) => {
     const allowed = ['image/jpeg', 'image/png', 'image/webp'];
-
     if (allowed.includes(file.mimetype)) {
         cb(null, true);
     } else {
@@ -38,7 +32,5 @@ const fileFilter = (req, file, cb) => {
 module.exports = multer({
     storage,
     fileFilter,
-    limits: {
-        fileSize: 2 * 1024 * 1024 // 2MB
-    }
+    limits: { fileSize: 2 * 1024 * 1024 }
 });

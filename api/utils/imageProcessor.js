@@ -1,6 +1,7 @@
 const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
+const { DATA_DIR } = require('./paths');
 
 /**
  * Processa imagens (capa, personagem, editora, etc)
@@ -10,6 +11,7 @@ const path = require('path');
  * @param {number} options.width
  * @param {number} options.height
  */
+
 module.exports = async function processImage(
     buffer,
     {
@@ -20,18 +22,15 @@ module.exports = async function processImage(
 ) {
     const filename = `${Date.now()}.jpg`;
 
-    const uploadDir = path.join('uploads', folder);
+    const uploadDir = path.join(DATA_DIR, folder);
     const outputPath = path.join(uploadDir, filename);
 
-    // garante que a pasta existe
     if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
     }
 
     await sharp(buffer)
-        .resize(width, height, {
-            fit: 'cover'
-        })
+        .resize(width, height, { fit: 'cover' })
         .jpeg({ quality: 80 })
         .toFile(outputPath);
 

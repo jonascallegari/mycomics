@@ -4,6 +4,8 @@ const path = require('path');
 
 const app = express();
 
+const { DATA_DIR } = require('./api/utils/paths');
+
 require('dotenv').config();
 
 // ===============================
@@ -22,15 +24,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 // ===============================
 app.use(
     '/uploads',
-    express.static(path.join(__dirname, 'api/uploads'), {
+    express.static(DATA_DIR, {
         etag: false,
         lastModified: false,
         maxAge: 0,
         setHeaders: (res) => {
-            res.setHeader(
-                'Cache-Control',
-                'no-store, no-cache, must-revalidate, proxy-revalidate'
-            );
+            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
             res.setHeader('Pragma', 'no-cache');
             res.setHeader('Expires', '0');
         }
