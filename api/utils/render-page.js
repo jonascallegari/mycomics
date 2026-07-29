@@ -94,11 +94,11 @@ function renderCharacterPage(pages, character, correctSlug) {
         .replace(/<meta property="og:url"[\s\S]*?content=".*?">/, `<meta property="og:url" content="${url}">`);
 
     html = html
-        .replace('<h1 id="characterName"></h1>', `<h1 id="characterName">${displayName}</h1>`)
-        .replace(
-            '<p id="characterHistory" class="text-justify"></p>',
-            `<p id="characterHistory" class="text-justify">${character.history || ''}</p>`
-        )
+    .replace('<h1 id="characterName"></h1>', `<h1 id="characterName">${displayName}</h1>`)
+    .replace(
+        '<div id="characterHistory" class="text-justify"></div>',
+        `<div id="characterHistory" class="text-justify">${character.history || ''}</div>`
+    )
         .replace(
             '<img id="characterImage" class="character-image">',
             `<img id="characterImage" class="character-image" alt="${imageAlt}" title="${imageAlt}">`
@@ -262,8 +262,8 @@ function renderCreatorPage(pages, creator, correctSlug) {
     html = html
         .replace('<h1 id="creatorName"></h1>', `<h1 id="creatorName">${creator.name}</h1>`)
         .replace(
-            '<p id="creatorBio" class="text-justify"></p>',
-            `<p id="creatorBio" class="text-justify">${creator.bio || ''}</p>`
+            '<div id="creatorBio" class="text-justify"></div>',
+            `<div id="creatorBio" class="text-justify">${creator.bio || ''}</div>`
         )
         .replace(
             '<img id="creatorImage" class="creator-image">',
