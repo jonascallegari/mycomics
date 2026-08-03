@@ -10,6 +10,14 @@ function escapeAttr(str) {
 // ============================
 // COMIC
 // ============================
+
+function resolveImagePath(image, folder) {
+    if (!image) return null;
+    if (image.startsWith('/uploads')) return `${process.env.BASE_URL}${image}`;
+    if (!image.includes('/')) return `${process.env.BASE_URL}/uploads/${folder}/${image}`;
+    return `${process.env.BASE_URL}/${image}`;
+}
+
 function renderComicPage(pages, comic, correctSlug) {
     let html = fs.readFileSync(path.join(pages, 'comic.html'), 'utf8');
 
@@ -41,6 +49,111 @@ function renderComicPage(pages, comic, correctSlug) {
             `<img id="comicCover" class="comic-image img-fluid rounded shadow" alt="${coverAlt}" title="${coverAlt}">`
         );
 
+    // === HISTÓRIAS (storiesList) ===
+    if (comic.stories?.length) {
+        const storiesHtml = comic.stories.map(story => {
+            const chars = story.characters?.map(c => c.alias).join(', ') || '—';
+            const creators = story.creators?.map(c => c.name).join(', ') || '—';
+            return `
+      <li class="list-group-item">
+        <h6 class="mb-1">${story.title}</h6>
+        <small><strong>Personagens:</strong> ${chars}</small><br>
+        <small><strong>Criadores:</strong> ${creators}</small>
+      </li>`;
+        }).join('');
+
+        html = html.replace(
+            '<ul id="storiesList" class="list-group"></ul>',
+            `<ul id="storiesList" class="list-group">${storiesHtml}</ul>`
+        );
+    }
+
+    // === PERSONAGENS (charactersGrid) ===
+    if (comic.characters?.length) {
+        const charactersHtml = comic.characters.map(character => {
+            const charSlug = makeSlug(character.id, character.alias || character.name);
+            const imgSrc = resolveImagePath(character.image, 'characters') || '/assets/img/placeholder-character.png';
+            const alt = escapeAttr(character.alias || character.name);
+            return `
+      <div class="col-6 col-md-4">
+        <div class="row g-2 mb-3">
+          <div class="col-4">
+            <a href="/personagem/${charSlug}">
+              <img src="${imgSrc}" class="img-fluid rounded-circle" alt="${alt}">
+            </a>
+          </div>
+          <div class="col-8 align-content-center">
+            <h5 class="mb-0">${character.alias || ''}</h5>
+            <p class="text-muted">${character.name}</p>
+          </div>
+        </div>
+      </div>`;
+        }).join('');
+
+        html = html.replace(
+            '<div id="charactersGrid" class="row mb-2"></div>',
+            `<div id="charactersGrid" class="row mb-2">${charactersHtml}</div>`
+        );
+    }
+
+    // === CRIADORES (creatorsGrid) ===
+    if (comic.creators?.length) {
+        const creatorsHtml = comic.creators.map(creator => {
+            const creatorSlug = makeSlug(creator.id, creator.name);
+            const imgSrc = resolveImagePath(creator.image, 'creators') || '/assets/img/placeholder-creator.png';
+            const alt = escapeAttr(creator.name);
+            return `
+      <div class="col-6 col-md-4">
+        <div class="row g-2 mb-3">
+          <div class="col-4">
+            <a href="/criador/${creatorSlug}">
+              <img src="${imgSrc}" class="img-fluid rounded-circle" alt="${alt}">
+            </a>
+          </div>
+          <div class="col-8 align-content-center">
+            <h5 class="mb-0">${creator.name}</h5>
+            <p class="text-muted">${creator.role || ''}</p>
+          </div>
+        </div>
+      </div>`;
+        }).join('');
+
+        html = html.replace(
+            '<div id="creatorsGrid" class="row"></div>',
+            `<div id="creatorsGrid" class="row">${creatorsHtml}</div>`
+        );
+    }
+
+    // === ARCOS (comicArcsList) ===
+    if (comic.arcs?.length) {
+        const arcsHtml = comic.arcs.map(arc => {
+            const arcSlug = makeSlug(arc.id, arc.name);
+            return `<li><a href="/arco/${arcSlug}" class="text-decoration-none link-warning">${arc.name}</a></li>`;
+        }).join('');
+
+        html = html
+            .replace(
+                '<div class="mt-3" id="comicArcsContainer" style="display:none;">',
+                '<div class="mt-3" id="comicArcsContainer">'
+            )
+            .replace(
+                '<ul id="comicArcsList"></ul>',
+                `<ul id="comicArcsList">${arcsHtml}</ul>`
+            );
+    }
+
+    // === JSON-LD enriquecido (personagens e criadores) ===
+    const characterLd = (comic.characters || []).map(c => `{
+        "@type": "Person",
+        "name": ${JSON.stringify(c.alias || c.name)}
+    }`).join(',');
+
+    const contributorLd = (comic.creators || []).map(c => `{
+        "@type": "Person",
+        "name": ${JSON.stringify(c.name)},
+        "jobTitle": ${JSON.stringify(c.role || '')}
+    }`).join(',');
+
     const jsonLd = `
     <script type="application/ld+json">
     {
@@ -56,6 +169,8 @@ function renderComicPage(pages, comic, correctSlug) {
             "ratingCount": ${comic.rating_count},
             "bestRating": "5"
         },` : ''}
+        ${characterLd ? `"character": [${characterLd}],` : ''}
+        ${contributorLd ? `"contributor": [${contributorLd}],` : ''}
         "description": ${JSON.stringify(description)}
     }
     </script>`;
