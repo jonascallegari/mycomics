@@ -38,7 +38,7 @@ fetch(`${API_BASE}/creators/${id}`)
         } else {
             comics.forEach(c => {
                 list.innerHTML += `
-            <div class="col-md-2 mb-4">
+            <div class="col-6 col-md-2 mb-4">
                 <a href="${Routes.comic(c)}" class="text-decoration-none">
                     <div class="card comic-card h-100 shadow-sm">
                         <img src="${BASE_URL}${c.cover}" class="card-img-top">

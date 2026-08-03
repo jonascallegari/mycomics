@@ -88,12 +88,24 @@
                         <div id="averageRating" class="mb-3"></div>
                         
                         <div class="mb-2">
-                            <button id="btnAddCollection" class="btn btn-dark me-2 collection-btn" onclick="addToCollection('Lendo')">
-                                <i class="fa fa-fw fa-book"></i> Adicionar à Coleção
+                            <button id="btnAddCollection" class="btn btn-dark me-2 collection-btn"
+                                    onclick="addToCollection('Lendo')"
+                                    data-bs-toggle="popover"
+                                    data-bs-trigger="hover focus"
+                                    data-bs-placement="top"
+                                    data-bs-content="Adicionar à Coleção">
+                                <i class="fa fa-fw fa-book"></i>
+                                <span class="btn-label d-none d-sm-inline"></span>
                             </button>
                             
-                            <button id="btnAddWishlist" class="btn btn-outline-warning collection-btn" onclick="addToCollection('Quero ler')">
-                                <i class="fa fa-fw fa-star"></i> Adicionar à Wishlist
+                            <button id="btnAddWishlist" class="btn btn-outline-warning collection-btn"
+                                    onclick="addToCollection('Quero ler')"
+                                    data-bs-toggle="popover"
+                                    data-bs-trigger="hover focus"
+                                    data-bs-placement="top"
+                                    data-bs-content="Adicionar à Wishlist">
+                                <i class="fa fa-fw fa-star"></i>
+                                <span class="btn-label d-none d-sm-inline"></span>
                             </button>
                             
                             <p id="alreadyInCollection" class="text-success fw-bold mt-2 d-none">
@@ -119,7 +131,7 @@
         
         <div class="container mt-4">
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-3 mb-3">
                     <h4>Histórias dessa Edição:</h4>
                     <ul id="storiesList" class="list-group"></ul>
                 </div>

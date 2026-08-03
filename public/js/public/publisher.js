@@ -42,7 +42,7 @@ fetch(`${API_BASE}/publishers/${id}`)
         
         comics.forEach(c => {
             container.innerHTML += `
-                <div class="col-md-2 mb-4">
+                <div class="col-6 col-md-2 mb-4">
                     <div class="card h-100">
                         ${c.cover
                     ? `<img src="${BASE_URL}${c.cover}" class="card-img-top">`

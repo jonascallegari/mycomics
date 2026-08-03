@@ -684,7 +684,7 @@ function renderCharacters(stories) {
   map.forEach(character => {
     console.log('CHARACTER:', character);
     container.innerHTML += `
-      <div class="col-6 col-md-4">
+      <div class="col-12 col-md-4">
         <div class="row g-2 mb-3">
           <div class="col-4">
             <a href="${Routes.character(character)}">
@@ -730,7 +730,7 @@ function renderCreators(stories) {
 
   map.forEach(creator => {
     container.innerHTML += `
-      <div class="col-6 col-md-4">
+      <div class="col-12 col-md-4">
         <div class="row g-2 mb-3">
           <div class="col-4">
             <a href="${Routes.creator(creator)}">
@@ -782,53 +782,56 @@ async function addToCollection(status) {
   }
 }
 
+// Helper novo — atualiza o texto do popover de um botão
+function setPopoverContent(el, text) {
+    const existing = bootstrap.Popover.getInstance(el);
+    if (existing) existing.dispose();
+    el.setAttribute('data-bs-content', text);
+    new bootstrap.Popover(el);
+}
 
 function updateButtonsAfterAdd(status, collectionId) {
-  const btnCollection = document.getElementById('btnAddCollection');
-  const btnWishlist = document.getElementById('btnAddWishlist');
-  const info = document.getElementById('alreadyInCollection');
+    const btnCollection = document.getElementById('btnAddCollection');
+    const btnWishlist = document.getElementById('btnAddWishlist');
+    const info = document.getElementById('alreadyInCollection');
 
-  const activeBtn =
-    status === 'Quero ler' ? btnWishlist : btnCollection;
+    const activeBtn = status === 'Quero ler' ? btnWishlist : btnCollection;
+    const otherBtn = status === 'Quero ler' ? btnCollection : btnWishlist;
 
-  const otherBtn =
-    status === 'Quero ler' ? btnCollection : btnWishlist;
+    otherBtn.classList.add('fade-out');
 
-  // Fade out do botão que vai sumir
-  otherBtn.classList.add('fade-out');
+    setTimeout(() => {
+        otherBtn.classList.add('d-none');
+        otherBtn.classList.remove('fade-out');
+    }, 300);
 
-  setTimeout(() => {
-    otherBtn.classList.add('d-none');
-    otherBtn.classList.remove('fade-out');
-  }, 300);
+    activeBtn.classList.add('success-pulse');
 
-  // Atualizar botão ativo
-  activeBtn.classList.add('success-pulse');
+    const newLabel = status === 'Quero ler'
+        ? 'Remover da Wishlist'
+        : 'Remover da Coleção';
 
-  if (status === 'Quero ler') {
-    activeBtn.innerHTML =
-      '<i class="fa fa-fw fa-trash"></i> Remover da Wishlist';
-  } else {
-    activeBtn.innerHTML =
-      '<i class="fa fa-fw fa-trash"></i> Remover da Coleção';
-  }
+    activeBtn.innerHTML = `
+        <i class="fa fa-fw fa-trash"></i>
+        <span class="btn-label d-none d-sm-inline">${newLabel}</span>
+    `;
 
-  activeBtn.classList.remove('btn-dark', 'btn-outline-warning');
-  activeBtn.classList.add('btn-outline-danger');
+    setPopoverContent(activeBtn, newLabel); // <-- popover sincronizado
 
-  activeBtn.onclick = () =>
-    removeFromCollection(collectionId);
+    activeBtn.classList.remove('btn-dark', 'btn-outline-warning');
+    activeBtn.classList.add('btn-outline-danger');
 
-  info.textContent =
-    status === 'Quero ler'
-      ? '⭐ Adicionado à sua wishlist'
-      : '✔ Adicionado à sua coleção';
+    activeBtn.onclick = () => removeFromCollection(collectionId);
 
-  info.classList.remove('d-none');
+    info.textContent = status === 'Quero ler'
+        ? '⭐ Adicionado à sua wishlist'
+        : '✔ Adicionado à sua coleção';
 
-  setTimeout(() => {
-    activeBtn.classList.remove('success-pulse');
-  }, 400);
+    info.classList.remove('d-none');
+
+    setTimeout(() => {
+        activeBtn.classList.remove('success-pulse');
+    }, 400);
 }
 
 async function removeFromCollection(id) {
@@ -851,35 +854,39 @@ async function removeFromCollection(id) {
 }
 
 function resetButtons() {
-  const btnCollection = document.getElementById('btnAddCollection');
-  const btnWishlist = document.getElementById('btnAddWishlist');
-  const info = document.getElementById('alreadyInCollection');
+    const btnCollection = document.getElementById('btnAddCollection');
+    const btnWishlist = document.getElementById('btnAddWishlist');
+    const info = document.getElementById('alreadyInCollection');
 
-  btnCollection.classList.add('fade-out');
-  btnWishlist.classList.add('fade-out');
+    btnCollection.classList.add('fade-out');
+    btnWishlist.classList.add('fade-out');
 
-  setTimeout(() => {
+    setTimeout(() => {
+        btnCollection.innerHTML = `
+            <i class="fa fa-fw fa-book"></i>
+            <span class="btn-label d-none d-sm-inline">Adicionar à Coleção</span>
+        `;
+        btnCollection.classList.remove('btn-outline-danger');
+        btnCollection.classList.add('btn-dark');
+        btnCollection.onclick = () => addToCollection('Lendo');
+        btnCollection.classList.remove('d-none');
+        setPopoverContent(btnCollection, 'Adicionar à Coleção');
 
-    btnCollection.innerHTML =
-      '<i class="fa fa-fw fa-book"></i> Adicionar à Coleção';
-    btnCollection.classList.remove('btn-outline-danger');
-    btnCollection.classList.add('btn-dark');
-    btnCollection.onclick = () => addToCollection('Lendo');
-    btnCollection.classList.remove('d-none');
+        btnWishlist.innerHTML = `
+            <i class="fa fa-fw fa-star"></i>
+            <span class="btn-label d-none d-sm-inline">Adicionar à Wishlist</span>
+        `;
+        btnWishlist.classList.remove('btn-outline-danger');
+        btnWishlist.classList.add('btn-outline-warning');
+        btnWishlist.onclick = () => addToCollection('Quero ler');
+        btnWishlist.classList.remove('d-none');
+        setPopoverContent(btnWishlist, 'Adicionar à Wishlist');
 
-    btnWishlist.innerHTML =
-      '<i class="fa fa-fw fa-star"></i> Adicionar à Wishlist';
-    btnWishlist.classList.remove('btn-outline-danger');
-    btnWishlist.classList.add('btn-outline-warning');
-    btnWishlist.onclick = () => addToCollection('Quero ler');
-    btnWishlist.classList.remove('d-none');
+        btnCollection.classList.remove('fade-out');
+        btnWishlist.classList.remove('fade-out');
 
-    btnCollection.classList.remove('fade-out');
-    btnWishlist.classList.remove('fade-out');
-
-    info.classList.add('d-none');
-
-  }, 200);
+        info.classList.add('d-none');
+    }, 200);
 }
 /**
  * ============================
@@ -938,7 +945,7 @@ function renderMoreFromSeries(comics) {
     comics.forEach(c => {
 
         container.innerHTML += `
-            <div class="col-md-2 mb-3">
+            <div class="col-6 col-md-2 mb-3">
 
                 <div class="card comic-card h-100 shadow-sm">
 
@@ -1040,7 +1047,7 @@ const cover = `
     }
 
     return `
-      <a href="${Routes.comic(comic)}" class="series-nav-btn text-end">
+      <a href="${Routes.comic(comic)}" class="series-nav-btn text-end justify-content-end">
         <div class="series-nav-info">
           <small>Próxima →</small>
           <div class="fw-bold small">
@@ -1108,6 +1115,17 @@ function renderBuyLinks(links) {
     container.appendChild(a);
   });
 }
+
+// Inicialização dos popovers (Bootstrap 5)
+function initPopovers() {
+    document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
+        const existing = bootstrap.Popover.getInstance(el);
+        if (existing) existing.dispose();
+        new bootstrap.Popover(el);
+    });
+}
+
+initPopovers();
 
 /**
  * ============================
