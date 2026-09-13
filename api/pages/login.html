@@ -65,15 +65,15 @@
     <main class="auth-container">
         <h3>Login</h3>
 
+        <form id="loginForm">
+            <input id="email" name="email" type="email" autocomplete="username" class="form-control mb-2" placeholder="Email" required />
+            <input id="password" name="password" type="password" autocomplete="current-password" class="form-control mb-2" placeholder="Senha" required />
 
-        <input id="email" class="form-control mb-2" placeholder="Email" />
-        <input id="password" type="password" class="form-control mb-2" placeholder="Senha" />
-
-
-        <button class="btn btn-primary w-100" onclick="login()">Entrar</button>
+            <button type="submit" class="btn btn-primary w-100">Entrar</button>
+        </form>
 
         <p class="auth-link">
-            <a href="/forgot-password">Esqueceu a Senha?</a>         
+            <a href="/forgot-password">Esqueceu a Senha?</a>
         </p>
     </main>
 

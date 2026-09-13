@@ -65,13 +65,10 @@
     <main class="auth-container">
         <h2>Criar conta</h2>
     
-        <form id="registerForm">
-            <input type="text" id="username" placeholder="Nome de usuário" />
-    
-            <input type="email" id="email" placeholder="Email" required />
-    
-            <input type="password" id="password" placeholder="Senha" required />
-    
+        <form id="registerForm" autocomplete="on">
+            <input type="text" id="username" name="username" autocomplete="off" placeholder="Nome de usuário" />
+            <input type="email" id="email" name="email" autocomplete="username" placeholder="Email" required />
+            <input type="password" id="password" name="password" autocomplete="new-password" placeholder="Senha" required />
             <button type="submit">Cadastrar</button>
         </form>
     

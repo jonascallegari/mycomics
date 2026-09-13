@@ -24,9 +24,65 @@ function isTokenExpired(token) {
 /**
  * Retorna o token atual
  */
-window.getToken = function () {
-    return localStorage.getItem('token');
-};
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('loginForm');
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (!email || !password) {
+                alert('Preencha email e senha');
+                return;
+            }
+
+            const res = await fetch(`${API}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                alert(data.error || 'Login inválido');
+                return;
+            }
+
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+
+            window.location.href = '/';
+        });
+    }
+
+    // Protege automaticamente toda a área administrativa
+    if (window.location.pathname.startsWith('/admin')) {
+        requireAdmin();
+    }
+
+    const token = getToken();
+
+    if (!token) {
+        return;
+    }
+
+    if (isTokenExpired(token)) {
+        logout(false);
+        console.log('Sessão expirada.');
+
+        if (window.location.pathname.includes('login.html')) {
+            return;
+        }
+
+        if (typeof updateNavbar === 'function') {
+            updateNavbar();
+        }
+    }
+});
 
 /**
  * Verifica se o usuário está logado
