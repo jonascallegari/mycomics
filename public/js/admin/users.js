@@ -1,4 +1,5 @@
-// users.js
+import { renderPagination } from '../../assets/js/components/pagination.js';
+
 const API_URL = `${API_BASE}/admin/users`;
 const token = localStorage.getItem('token');
 const table = document.getElementById('usersTable');
@@ -46,7 +47,7 @@ async function loadUsers(page = 1) {
     });
 
     renderPagination({
-        container: document.getElementById('usersPagination'), // precisa existir esse elemento no HTML
+        container: document.getElementById('usersPagination'),
         page: pagination.page,
         totalPages: pagination.pages,
         total: pagination.total,
@@ -63,7 +64,11 @@ async function updateRole(id, role) {
         },
         body: JSON.stringify({ role })
     });
-    loadUsers(currentPage); // mantém na mesma página depois de salvar
+    loadUsers(currentPage);
 }
+
+// Como o arquivo agora é um módulo ES, funções chamadas via onclick="" no HTML
+// (escopo global) precisam ser expostas explicitamente
+window.updateRole = updateRole;
 
 loadUsers();
