@@ -74,13 +74,16 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const db = await dbPromise;
-        const { email, password } = req.body;
+        const identifier = (req.body.identifier || req.body.email || '').trim();
+        const { password } = req.body;
 
         const user = await db.get(`
             SELECT id, username, email, password, role, avatar, email_verified
             FROM users
-            WHERE email = ?
-        `, [email]);
+            WHERE email = ? OR username = ?
+            ORDER BY CASE WHEN email = ? THEN 0 ELSE 1 END
+            LIMIT 1
+        `, [identifier, identifier, identifier]);
 
         if (!user) {
             return res.status(401).json({ error: 'Credenciais inválidas' });

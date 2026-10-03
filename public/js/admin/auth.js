@@ -55,18 +55,18 @@ window.isLoggedIn = () => {
  * LOGIN
  */
 window.login = async function () {
-    const email = document.getElementById('email').value.trim();
+    const identifier = document.getElementById('identifier').value.trim();
     const password = document.getElementById('password').value.trim();
 
-    if (!email || !password) {
-        alert('Preencha email e senha');
+    if (!identifier || !password) {
+        alert('Preencha e-mail ou nome de usuário e senha');
         return;
     }
 
     const res = await fetch(`${API}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ identifier, password })
     });
 
     const data = await res.json();
