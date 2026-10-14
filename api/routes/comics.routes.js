@@ -316,7 +316,7 @@ router.get('/', async (req, res) => {
         const limit = parseInt(req.query.limit) || 12;
         const offset = (page - 1) * limit;
 
-        const { publisher, year, sort } = req.query;
+        const { publisher, year, sort, search } = req.query;
 
         let where = [];
         let params = [];
@@ -329,6 +329,24 @@ router.get('/', async (req, res) => {
         if (year) {
             where.push('c.year = ?');
             params.push(year);
+        }
+
+        if (search) {
+            const searchTerm = `%${search}%`;
+            where.push(`(
+                c.title LIKE ?
+                OR c.isbn LIKE ?
+                OR CAST(c.issue_number AS TEXT) LIKE ?
+                OR EXISTS (
+                    SELECT 1 FROM publishers sp
+                    WHERE sp.id = c.publisher_id AND sp.name LIKE ?
+                )
+                OR EXISTS (
+                    SELECT 1 FROM publishers sop
+                    WHERE sop.id = c.original_publisher_id AND sop.name LIKE ?
+                )
+            )`);
+            params.push(searchTerm, searchTerm, searchTerm, searchTerm, searchTerm);
         }
 
         let orderBy = 'c.created_at DESC'; // padrão agora = mais recentes

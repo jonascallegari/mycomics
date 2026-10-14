@@ -3,6 +3,7 @@ import { renderPagination } from '../../assets/js/components/pagination.js';
 const API_URL = `${API_BASE}/comics`;
 const form = document.getElementById('comicForm');
 const table = document.getElementById('comicsTable');
+const searchInput = document.getElementById('searchInput');
 const token = localStorage.getItem('token');
 const coverInput = document.getElementById('cover');
 const coverPreview = document.getElementById('coverPreview');
@@ -14,6 +15,16 @@ let currentPage = 1;
 const limit = 12;
 
 const paginationContainer = document.getElementById('pagination');
+let searchTimeout;
+
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchTimeout);
+
+  searchTimeout = setTimeout(() => {
+    currentPage = 1;
+    loadComics();
+  }, 400);
+});
 
 /**
  * ============================
@@ -352,13 +363,27 @@ async function loadSeries(selectId, selected = null) {
  */
 async function loadComics() {
 
-  const res = await fetch(`${API_URL}?page=${currentPage}&limit=${limit}`);
+  const search = searchInput.value.trim();
+  const params = new URLSearchParams({
+    page: currentPage,
+    limit
+  });
+
+  if (search) {
+    params.set('search', search);
+  }
+
+  const res = await fetch(`${API_URL}?${params}`);
   const response = await res.json();
 
   const comics = response.data || [];
   const pageData = response.pagination;
 
   table.innerHTML = '';
+
+  if (comics.length === 0) {
+    table.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Nenhum quadrinho encontrado.</td></tr>';
+  }
 
   comics.forEach(c => {
     table.innerHTML += `
