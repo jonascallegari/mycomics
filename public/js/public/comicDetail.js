@@ -176,7 +176,7 @@ if (container) {
 
   if (comic.series_id) {
     seriesElement.innerHTML = `
-      <a href="serie.html?id=${comic.series_id}" class="text-decoration-none link-warning">
+      <a href="${Routes.serie({ id: comic.series_id, name: comic.series_name })}" class="text-decoration-none link-warning">
         ${comic.series_name}
       </a>
     `;
