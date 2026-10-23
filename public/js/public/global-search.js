@@ -3,11 +3,26 @@ function initGlobalSearch() {
     console.log('Busca global iniciada');
 
     const input = document.getElementById('globalSearch');
+    const form = input?.closest('form');
     const resultsBox = document.getElementById('searchResults');
 
     if (!input || !resultsBox) {
         console.warn('Input ou resultsBox não encontrados');
         return;
+    }
+
+    if (form) {
+        form.addEventListener('submit', (event) => {
+            const q = input.value.trim();
+
+            if (!q) {
+                event.preventDefault();
+                return;
+            }
+
+            event.preventDefault();
+            window.location.href = `/search?q=${encodeURIComponent(q)}`;
+        });
     }
 
     let timeout;

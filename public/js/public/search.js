@@ -41,13 +41,18 @@ function renderComics(comics) {
     }
 
     comics.forEach(c => {
+        const cover = c.cover ? `${BASE_URL}${c.cover}` : '/assets/img/placeholder-comic.png';
+        const comicUrl = Routes.comic(c);
+
         comicsEl.innerHTML += `
-            <div class="col-md-3 mb-4">
+            <div class="col-md-2 mb-4">
                 <div class="card comic-card h-100 shadow-sm">
-                    <img src="${BASE_URL}${c.cover}" class="card-img-top">
+                    <a href="${comicUrl}" class="text-decoration-none">
+                        <img src="${cover}" class="card-img-top" alt="${c.title}">
+                    </a>
                     <div class="card-body text-center">
-                        <h6>${c.title}</h6>
-                        <small>${c.publisher_name || ''} • ${c.year || ''}</small>
+                        <h6><a href="${comicUrl}" class="text-decoration-none text-dark">${c.title}</a></h6>
+                        <small>${c.publisher_name || ''}${c.publisher_name && c.year ? ' • ' : ''}${c.year || ''}</small>
                     </div>
                 </div>
             </div>
@@ -67,16 +72,26 @@ function renderCharacters(characters) {
     }
 
     characters.forEach(c => {
+        const label = c.alias || c.name || 'Personagem';
+        const image = c.image
+            ? c.image.startsWith('/uploads')
+                ? `${BASE_URL}${c.image}`
+                : c.image.includes('/')
+                    ? `${BASE_URL}/${c.image}`
+                    : `${BASE_URL}/uploads/characters/${c.image}`
+            : '/assets/img/placeholder-character.png';
+        const characterUrl = Routes.character(c);
+
         charactersEl.innerHTML += `
-            <div class="col-md-3 mb-4">
+            <div class="col-md-2 mb-4">
                 <div class="card h-100 shadow-sm text-center">
-                    <img 
-                        src="${BASE_URL}${c.image || '/uploads/placeholder-character.png'}"
-                        class="card-img-top">
+                    <a href="${characterUrl}" class="text-decoration-none">
+                        <img src="${image}" class="card-img-top" alt="${label}">
+                    </a>
                     <div class="card-body">
-                        <h6>${c.name}</h6>
-                        <small>${c.alias || ''}</small>
-                        <a href="character.html?id=${c.id}" class="btn btn-sm btn-outline-primary w-100 mt-2">
+                        <h6><a href="${characterUrl}" class="text-decoration-none text-dark">${label}</a></h6>
+                        <small>${c.name && c.alias ? c.name : ''}</small>
+                        <a href="${characterUrl}" class="btn btn-sm btn-outline-primary w-100 mt-2">
                             Ver personagem
                         </a>
                     </div>
@@ -98,16 +113,25 @@ function renderCreators(creators) {
     }
 
     creators.forEach(c => {
+        const image = c.image
+            ? c.image.startsWith('/uploads')
+                ? `${BASE_URL}${c.image}`
+                : c.image.includes('/')
+                    ? `${BASE_URL}/${c.image}`
+                    : `${BASE_URL}/uploads/creators/${c.image}`
+            : '/assets/img/placeholder-creator.png';
+        const creatorUrl = Routes.creator(c);
+
         creatorsEl.innerHTML += `
-            <div class="col-md-3 mb-4">
+            <div class="col-md-2 mb-4">
                 <div class="card h-100 shadow-sm text-center">
-                    <img 
-                        src="${BASE_URL}${c.image || '/uploads/placeholder-creator.png'}"
-                        class="card-img-top">
+                    <a href="${creatorUrl}" class="text-decoration-none">
+                        <img src="${image}" class="card-img-top" alt="${c.name}">
+                    </a>
                     <div class="card-body">
-                        <h6>${c.name}</h6>
+                        <h6><a href="${creatorUrl}" class="text-decoration-none text-dark">${c.name}</a></h6>
                         <small>${c.role || ''}</small>
-                        <a href="creator.html?id=${c.id}" class="btn btn-sm btn-outline-secondary w-100 mt-2">
+                        <a href="${creatorUrl}" class="btn btn-sm btn-outline-secondary w-100 mt-2">
                             Ver criador
                         </a>
                     </div>

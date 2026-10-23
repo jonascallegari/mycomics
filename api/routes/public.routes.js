@@ -303,14 +303,14 @@ router.get('/search', async (req, res) => {
         `, [search]);
 
         const characters = await db.all(`
-            SELECT id, alias
+            SELECT id, name, alias, image
             FROM characters
-            WHERE alias LIKE ?
+            WHERE name LIKE ? OR alias LIKE ?
             LIMIT 5
-        `, [search]);
+        `, [search, search]);
 
         const creators = await db.all(`
-            SELECT id, name
+            SELECT id, name, role, image
             FROM creators
             WHERE name LIKE ?
             LIMIT 5
