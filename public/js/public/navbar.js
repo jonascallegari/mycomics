@@ -14,7 +14,7 @@ window.initNavbar = function () {
       <li class="nav-item dropdown">
         <a class="nav-link text-warning btn btn-dark dropdown-toggle d-flex align-items-center"
            data-bs-toggle="dropdown"
-           href="perfil.html?user=${user.username}">
+           href="/perfil?user=${encodeURIComponent(user.username)}">
 
           <img src="${avatarUrl}"
                onerror="this.src='/assets/img/placeholder-character.png'"
@@ -24,7 +24,7 @@ window.initNavbar = function () {
         </a>
 
         <ul class="dropdown-menu dropdown-menu-dark">
-          <li><a class="dropdown-item" href="/perfil?user=${user.username}">Meu Perfil</a></li>
+          <li><a class="dropdown-item" href="/perfil?user=${encodeURIComponent(user.username)}">Meu Perfil</a></li>
           <li><a class="dropdown-item" href="/my-reviews">Meus Reviews</a></li>
           <li><a class="dropdown-item" href="/my-collection">Minha Coleção</a></li>
           <li><a class="dropdown-item" href="/wishlist">Wishlist</a></li>

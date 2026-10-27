@@ -27,7 +27,7 @@ async function loadUsers(page = 1) {
     users.forEach(u => {
         table.innerHTML += `
         <tr>
-            <td>${u.username}</td>
+            <td><a href="/perfil?user=${encodeURIComponent(u.username)}">${u.username}</a></td>
             <td>${u.email}</td>
             <td>
                 <select id="role-${u.id}">

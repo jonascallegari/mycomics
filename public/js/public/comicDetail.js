@@ -23,6 +23,16 @@ function renderStars(rating) {
   return html;
 }
 
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, character => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[character]);
+}
+
 /**
  * ============================
  * RESOLVER CAMINHO DE IMAGEM
@@ -442,7 +452,7 @@ reviews.forEach(r => {
   list.innerHTML += `
     <div class="review mb-3 pb-3 border-bottom">
 
-      <strong>${r.username}</strong>
+      <strong><a href="/perfil?user=${encodeURIComponent(r.username)}" class="text-decoration-none">${escapeHtml(r.username)}</a></strong>
 
       <div class="mb-2">
         ${renderStars(r.rating)}
