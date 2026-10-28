@@ -176,6 +176,8 @@ router.get('/register', page('register'));
 
 router.get('/perfil', page('perfil'));
 
+router.get('/usuarios', page('users'));
+
 router.get('/editar-perfil', page('editar-perfil'));
 
 router.get('/comics', page('comics'));

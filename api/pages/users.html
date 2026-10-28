@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Comunidade - My Comics</title>
+    <meta name="description" content="Conheça os leitores da comunidade My Comics, veja seus perfis, coleções e avaliações.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://mycomics.com.br/usuarios">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Comunidade - My Comics">
+    <meta property="og:description" content="Conheça os leitores da comunidade My Comics.">
+    <meta property="og:url" content="https://mycomics.com.br/usuarios">
+    <meta property="og:site_name" content="My Comics">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+</head>
+
+<body class="bg-light">
+    <div id="navbar-container"></div>
+
+    <main class="container py-4">
+        <header class="mb-4">
+            <h1>Comunidade</h1>
+            <p class="text-muted mb-0">Conheça outros leitores, suas coleções e avaliações.</p>
+        </header>
+
+        <section class="card shadow-sm mb-4" aria-label="Buscar e ordenar usuários">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <label for="userSearch" class="form-label">Buscar usuário</label>
+                        <input type="search" id="userSearch" class="form-control" placeholder="Digite um nome de usuário">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="userSort" class="form-label">Ordenar por</label>
+                        <select id="userSort" class="form-select">
+                            <option value="active">Mais ativos</option>
+                            <option value="newest">Mais recentes</option>
+                            <option value="name">Nome</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div id="usersStatus" class="text-center text-muted py-4" role="status">Carregando usuários...</div>
+        <section id="usersGrid" class="row g-3" aria-live="polite"></section>
+        <nav class="mt-4" aria-label="Paginação de usuários">
+            <div id="usersPagination"></div>
+        </nav>
+    </main>
+
+    <div id="footer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/public/config.js"></script>
+    <script src="../js/admin/auth.js"></script>
+    <script src="../js/public/layout.js"></script>
+    <script src="../js/public/navbar.js"></script>
+    <script type="module" src="../js/public/users.js"></script>
+    <script src="../js/public/global-search.js" defer></script>
+</body>
+
+</html>

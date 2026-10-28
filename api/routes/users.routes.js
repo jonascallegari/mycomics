@@ -3,6 +3,85 @@ const dbPromise = require('../database/db');
 
 const router = express.Router();
 
+// ============================
+// 👥 DIRETÓRIO PÚBLICO DE USUÁRIOS
+// ============================
+router.get('/', async (req, res) => {
+    try {
+        const db = await dbPromise;
+        const requestedPage = Number.parseInt(req.query.page, 10);
+        const requestedLimit = Number.parseInt(req.query.limit, 10);
+        const page = Number.isInteger(requestedPage) && requestedPage > 0
+            ? requestedPage
+            : 1;
+        const limit = Number.isInteger(requestedLimit) && requestedLimit > 0
+            ? Math.min(requestedLimit, 48)
+            : 12;
+        const offset = (page - 1) * limit;
+        const search = typeof req.query.search === 'string'
+            ? req.query.search.trim()
+            : '';
+        const searchPattern = `%${search}%`;
+        const sort = ['active', 'newest', 'name'].includes(req.query.sort)
+            ? req.query.sort
+            : 'active';
+
+        const countResult = await db.get(
+            `SELECT COUNT(*) AS total
+             FROM users
+             WHERE username LIKE ? COLLATE NOCASE`,
+            [searchPattern]
+        );
+
+        const orderBy = {
+            active: 'activity_count DESC, review_count DESC, u.username COLLATE NOCASE ASC',
+            newest: 'u.created_at DESC, u.username COLLATE NOCASE ASC',
+            name: 'u.username COLLATE NOCASE ASC'
+        }[sort];
+
+        const users = await db.all(
+            `
+            SELECT
+                u.username,
+                u.avatar,
+                u.bio,
+                u.created_at,
+                (SELECT COUNT(*)
+                 FROM user_comics uc
+                 WHERE uc.user_id = u.id) AS collection_count,
+                (SELECT COUNT(*)
+                 FROM reviews r
+                 WHERE r.user_id = u.id) AS review_count,
+                (
+                    (SELECT COUNT(*)
+                     FROM user_comics uc
+                     WHERE uc.user_id = u.id) +
+                    (SELECT COUNT(*)
+                     FROM reviews r
+                     WHERE r.user_id = u.id)
+                ) AS activity_count
+            FROM users u
+            WHERE u.username LIKE ? COLLATE NOCASE
+            ORDER BY ${orderBy}
+            LIMIT ? OFFSET ?
+            `,
+            [searchPattern, limit, offset]
+        );
+
+        res.json({
+            data: users,
+            pagination: {
+                page,
+                limit,
+                total: countResult.total,
+                totalPages: Math.ceil(countResult.total / limit)
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Erro ao carregar usuários' });
+    }
+});
 
 // ============================
 // 📊 ESTATÍSTICAS PÚBLICAS
